@@ -82,7 +82,8 @@ public:
     tcele,          // TCE little endian (http://tce.cs.tut.fi/): tcele
     thumb,          // Thumb (little endian): thumb, thumbv.*
     thumbeb,        // Thumb (big endian): thumbeb
-    x86,            // X86: i[3-9]86
+    x86_16,         // X86-16: i[0-2]86
+    x86,            // X86-32: i[3-9]86
     x86_64,         // X86-64: amd64, x86_64
     xcore,          // XCore: xcore
     xtensa,         // Tensilica: Xtensa

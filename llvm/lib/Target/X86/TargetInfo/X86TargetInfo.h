@@ -13,6 +13,7 @@ namespace llvm {
 
 class Target;
 
+Target &getTheX86_16Target();
 Target &getTheX86_32Target();
 Target &getTheX86_64Target();
 
