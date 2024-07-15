@@ -80,6 +80,7 @@ StringRef Triple::getArchTypeName(ArchType Kind) {
   case ve:             return "ve";
   case wasm32:         return "wasm32";
   case wasm64:         return "wasm64";
+  case x86_16:         return "8086";
   case x86:            return "i386";
   case x86_64:         return "x86_64";
   case xcore:          return "xcore";
@@ -188,6 +189,7 @@ StringRef Triple::getArchTypePrefix(ArchType Kind) {
 
   case systemz:     return "s390";
 
+  case x86_16:
   case x86:
   case x86_64:      return "x86";
 
@@ -423,6 +425,8 @@ Triple::ArchType Triple::getArchTypeForLLVMName(StringRef Name) {
     .Case("tcele", tcele)
     .Case("thumb", thumb)
     .Case("thumbeb", thumbeb)
+    .Case("x86-16", x86_16)
+    .Case("i86", x86_16)
     .Case("x86", x86)
     .Case("i386", x86)
     .Case("x86-64", x86_64)
@@ -522,6 +526,7 @@ static Triple::ArchType parseARMArch(StringRef ArchName) {
 static Triple::ArchType parseArch(StringRef ArchName) {
   auto AT =
       StringSwitch<Triple::ArchType>(ArchName)
+          .Cases("8086", "i86", "i186", "i286", Triple::x86_16)
           .Cases("i386", "i486", "i586", "i686", Triple::x86)
           // FIXME: Do we need to support these?
           .Cases("i786", "i886", "i986", Triple::x86)
@@ -875,6 +880,7 @@ static Triple::ObjectFormatType getDefaultFormat(const Triple &T) {
   case Triple::aarch64_32:
   case Triple::arm:
   case Triple::thumb:
+  case Triple::x86_16:
   case Triple::x86:
   case Triple::x86_64:
     switch (T.getOS()) {
@@ -1582,6 +1588,7 @@ unsigned Triple::getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
 
   case llvm::Triple::avr:
   case llvm::Triple::msp430:
+  case llvm::Triple::x86_16:
     return 16;
 
   case llvm::Triple::aarch64_32:
@@ -1734,7 +1741,10 @@ Triple Triple::get32BitArchVariant() const {
     T.setArch(Triple::spirv32, getSubArch());
     break;
   case Triple::wasm64:         T.setArch(Triple::wasm32);  break;
-  case Triple::x86_64:         T.setArch(Triple::x86);     break;
+  case Triple::x86_16:
+  case Triple::x86_64:
+    T.setArch(Triple::x86);
+    break;
   }
   return T;
 }
@@ -1813,7 +1823,10 @@ Triple Triple::get64BitArchVariant() const {
   case Triple::thumb:           T.setArch(Triple::aarch64);    break;
   case Triple::thumbeb:         T.setArch(Triple::aarch64_be); break;
   case Triple::wasm32:          T.setArch(Triple::wasm64);     break;
-  case Triple::x86:             T.setArch(Triple::x86_64);     break;
+  case Triple::x86_16:
+  case Triple::x86:
+    T.setArch(Triple::x86_64);
+    break;
   }
   return T;
 }
@@ -1852,6 +1865,7 @@ Triple Triple::getBigEndianArchVariant() const {
   case Triple::spirv64:
   case Triple::wasm32:
   case Triple::wasm64:
+  case Triple::x86_16:
   case Triple::x86:
   case Triple::x86_64:
   case Triple::xcore:
@@ -1963,6 +1977,7 @@ bool Triple::isLittleEndian() const {
   case Triple::ve:
   case Triple::wasm32:
   case Triple::wasm64:
+  case Triple::x86_16:
   case Triple::x86:
   case Triple::x86_64:
   case Triple::xcore:

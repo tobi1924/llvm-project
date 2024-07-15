@@ -10,6 +10,11 @@
 #include "llvm/MC/TargetRegistry.h"
 using namespace llvm;
 
+Target &llvm::getTheX86_16Target() {
+  static Target TheX86_16Target;
+  return TheX86_16Target;
+}
+
 Target &llvm::getTheX86_32Target() {
   static Target TheX86_32Target;
   return TheX86_32Target;
@@ -20,9 +25,12 @@ Target &llvm::getTheX86_64Target() {
 }
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeX86TargetInfo() {
-  RegisterTarget<Triple::x86, /*HasJIT=*/true> X(
+  RegisterTarget<Triple::x86_16, /*HasJIT=*/true> X(
+    getTheX86_16Target(), "x86-16", "16-bit X86: 8086, 8088, 80186, and 80286", "X86");
+
+  RegisterTarget<Triple::x86, /*HasJIT=*/true> Y(
       getTheX86_32Target(), "x86", "32-bit X86: Pentium-Pro and above", "X86");
 
-  RegisterTarget<Triple::x86_64, /*HasJIT=*/true> Y(
+  RegisterTarget<Triple::x86_64, /*HasJIT=*/true> Z(
       getTheX86_64Target(), "x86-64", "64-bit X86: EM64T and AMD64", "X86");
 }
